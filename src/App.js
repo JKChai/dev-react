@@ -2,14 +2,14 @@ import React, { useState } from "react";
 
 // https://www.cluemediator.com/add-or-remove-input-fields-dynamically-with-reactjs
 function App() {
-    const [inputList, setInputList] = useState([{ firstName: "", lastName: "" }]);
+    const [inputList, setInputList] = useState([{}]);
 
     // handle input change
     const handleInputChange = (e, index) => {
     const { name, value } = e.target;
     const list = [...inputList];
     list[index][name] = value;
-    setInputList(list);
+    setInputList(list); 
     };
     
     // handle click event of the Remove button
