@@ -1,75 +1,101 @@
 import React, { useState } from "react";
+import Container from "@material-ui/core/Container";
+import { TextField } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import RemoveIcon from "@material-ui/icons/Remove";
+import AddIcon from "@material-ui/icons/Add";
+import Icon from "@material-ui/core/Icon";
 
-// https://www.cluemediator.com/add-or-remove-input-fields-dynamically-with-reactjs
+import { makeStyles } from "@material-ui/core/styles";
 
-function addRemove() {
-
-    const [inputList, setInputList] = useState([{}]);
-
-    // handle input change
-    const handleInputChange = (e, index) => {
-        const { name, value } = e.target;
-        const list = [...inputList];
-        list[index][name] = value;
-        setInputList(list); 
-        };
-        
-    // handle click event of the Remove button
-    const handleRemoveClick = index => {
-        const list = [...inputList];
-        list.splice(index, 1);
-        setInputList(list);
-        };
-        
-    // handle click event of the Add button
-    const handleAddClick = () => {
-        setInputList([...inputList, { firstName: "", lastName: "" }]);
-        };
-
-        
-    return(
-        handleInputChange,
-        handleRemoveClick,
-        handleAddClick,
-        inputList
-    );
-}
-
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& .MuiTextField-root": {
+      margin: theme.spacing(1),
+    },
+  },
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
 
 function App() {
+  const classes = useStyles();
+  const [inputFields, setInputFields] = useState([
+    { firstName: "", lastName: "" },
+  ]);
 
-    return (
-        <div className="App">
-            <h3><a href="http://cluemediator.com">Clue Mediator</a></h3>
-            {addRemove.inputList.map((x, i) => {
-                return (
-                    <div className="box" key={i}>
-                        <input 
-                            key={i}
-                            name="firstName"
-                            value={ x.firstName }
-                            onChange={e => addRemove.handleInputChange(e, i)}
-                        />
-                        <input
-                            key={i}
-                            className="ml10"
-                            name="lastName"
-                            value={ x.lastName }
-                            onChange={e => addRemove.handleInputChange(e, i)}
-                        />
-                        <div className="btn-box">
-                            {addRemove.inputList.length !== 1 && 
-                            <button className="mr10" onClick={() => 
-                            addRemove.handleRemoveClick(i)}>Remove</button>}
-                            {addRemove.inputList.length - 1 === i && 
-                            <button onClick={addRemove.handleAddClick}>Add</button>}
-                        </div>
-                    </div>
-                );
-            })}
-            <div style={{ marginTop: 20 }}>{addRemove.inputList}</div>
-        </div>
-    );
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("InputFields", inputFields);
+  }
+
+  const handleChangeInput = (index, event) => {
+    const values = [...inputFields];
+    // console.log(index, values)
+    values[index][event.target.name] = event.target.value;
+    setInputFields(values);
+  }
+
+  const handleAddFields = () => {
+    // add new empty rows
+    setInputFields([...inputFields, { firstName: '', lastName: ''}])
+  }
+
+  const handleRemoveFields = (index) => {
+    // index is use to locate the current row
+    const values = [...inputFields]; // collect current objects
+    values.splice(index, 1); // remove specified position only
+    setInputFields(values); //update with remove objects
+  }
+
+
+  return (
+    <Container>
+      <h1>Add New Member</h1>
+      <form className={classes.root} onClick={ handleSubmit }>
+        {inputFields.map((inputField, index) => (
+          <div key={index}>
+            <TextField
+              name="firstName"
+              label="First Name"
+              variant="filled"
+              value={inputField.firstName}
+              onChange={event => handleChangeInput(index, event)}
+            />
+            <TextField
+              name="lastName"
+              label="Last Name"
+              variant="filled"
+              value={inputField.lastName}
+              onChange={event => handleChangeInput(index, event)}
+            />
+            <IconButton
+              onClick = {() => handleRemoveFields(index)}
+            >
+              <RemoveIcon />
+            </IconButton>
+            <IconButton 
+              onClick = {() => handleAddFields()}
+            >
+              <AddIcon />
+            </IconButton>
+          </div>
+        ))}
+        <Button
+          className={ classes.button }
+          variant="contained"
+          color="primary"
+          type="submit"
+          endIcon={<Icon>send</Icon>}
+          onClick={ handleSubmit }
+        >
+          SEND
+        </Button>
+      </form>
+    </Container>
+  );
 }
 
 export default App;
